@@ -18,6 +18,8 @@ You can easily build a Tuppari application by just using Ruby API. Let's get sta
 Prepare Gemfile as follows.
 
 ```ruby
+source 'https://rubygems.org'
+
 gem 'tuppari'
 ```
 
