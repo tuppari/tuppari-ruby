@@ -9,7 +9,7 @@ require 'tuppari/application'
 require 'tuppari/authentication_error'
 require 'tuppari/client'
 require 'tuppari/client_error'
-require 'tuppari/server_url'
+require 'tuppari/gyoji_server_spec'
 
 # Tuppari API client
 #

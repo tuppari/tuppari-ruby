@@ -10,11 +10,12 @@ require 'tuppari'
 module Tuppari
   class Client
 
-    attr_accessor :account_name, :account_secret, :application, :log
+    attr_accessor :gyoji_base_url, :account_name, :account_secret, :application, :log
 
     def initialize(params = {})
       @log = Logger.new(params[:log_output] || STDOUT)
       @log.level = params[:log_level] || Logger::INFO
+      @gyoji_base_url = params[:gyoji_base_url] || GyojiServerSpec::DEFAULT_GYOJI_BASE_URL
       @account_name = params[:account_name]
       @account_secret = params[:account_secret]
       setup_application(params)
@@ -28,7 +29,8 @@ module Tuppari
     def create_account(account_name, password)
       body = JSON.unparse({"accountName" => account_name, "password" => password})
       begin
-        RestClient.post(Tuppari::ServerURL::ACCOUNTS_REGISTER, body, :content_type => :json)
+        url = get_gyoji_base_url() + Tuppari::GyojiServerSpec::ACCOUNTS_REGISTER_PATH
+        RestClient.post(url, body, :content_type => :json)
       rescue RestClient::Exception => e
         @log.warn("Failed to create a new Tuppari account (#{e}, #{e.http_body})")
         raise e
@@ -41,7 +43,8 @@ module Tuppari
     def login(account_name, password)
       body = JSON.unparse({:accountName => account_name, :password => password})
       begin
-        body = RestClient.post(Tuppari::ServerURL::ACCOUNTS_AUTH, body, :content_type => :json)
+        url = get_gyoji_base_url() + Tuppari::GyojiServerSpec::ACCOUNTS_AUTH_PATH
+        body = RestClient.post(url, body, :content_type => :json)
         credentials = JSON.parse(body)['credentials']
         @account_name = credentials['id']
         @account_secret = credentials['secret']
@@ -70,11 +73,12 @@ module Tuppari
       time = Time.now
       headers = headers('CreateApplication', time)
       body_params = {:applicationName => application_name.to_s}
+      url = get_gyoji_base_url() + Tuppari::GyojiServerSpec::APPLICATIONS_PATH
       auth_header = Tuppari::Auth.create_authorization_header(
           :id => @account_name,
           :secret => @account_secret,
           :method => 'POST',
-          :uri => Tuppari::ServerURL::APPLICATIONS,
+          :uri => url,
           :host => 'api.tuppari.com',
           :query_string => '',
           :headers => headers,
@@ -82,9 +86,7 @@ module Tuppari
           :request_time => time
       )
       begin
-        body = RestClient.post(Tuppari::ServerURL::APPLICATIONS,
-                               JSON.unparse(body_params),
-                               headers.merge(:authorization => auth_header))
+        body = RestClient.post(url, JSON.unparse(body_params), headers.merge(:authorization => auth_header))
         @log.debug {
           "create_application response: #{body}"
         }
@@ -115,11 +117,12 @@ module Tuppari
       time = Time.now
       headers = headers('DeleteApplication', time)
       body_params = {:applicationName => application_name}
+      url = get_gyoji_base_url() + Tuppari::GyojiServerSpec::APPLICATIONS_PATH
       auth_header = Tuppari::Auth.create_authorization_header(
           :id => @account_name,
           :secret => @account_secret,
           :method => 'POST',
-          :uri => Tuppari::ServerURL::APPLICATIONS,
+          :uri => url,
           :host => 'api.tuppari.com',
           :query_string => '',
           :headers => headers,
@@ -127,9 +130,7 @@ module Tuppari
           :request_time => time
       )
       begin
-        RestClient.post(Tuppari::ServerURL::APPLICATIONS,
-                        JSON.unparse(body_params),
-                        headers.merge(:authorization => auth_header))
+        RestClient.post(url, JSON.unparse(body_params), headers.merge(:authorization => auth_header))
         @log.info {
           "Tuppari application is deleted. (#{application_name})"
         }
@@ -155,11 +156,12 @@ module Tuppari
       time = Time.now
       headers = headers('ListApplication', time)
       body_params = {}
+      url = get_gyoji_base_url() + Tuppari::GyojiServerSpec::APPLICATIONS_PATH
       auth_header = Tuppari::Auth.create_authorization_header(
           :id => @account_name,
           :secret => @account_secret,
           :method => 'POST',
-          :uri => Tuppari::ServerURL::APPLICATIONS,
+          :uri => url,
           :host => 'api.tuppari.com',
           :query_string => '',
           :headers => headers,
@@ -167,9 +169,7 @@ module Tuppari
           :request_time => time
       )
       begin
-        body = RestClient.post(Tuppari::ServerURL::APPLICATIONS,
-                               JSON.unparse(body_params),
-                               headers.merge(:authorization => auth_header))
+        body = RestClient.post(url, JSON.unparse(body_params), headers.merge(:authorization => auth_header))
         @log.debug {
           "get_application_list response: #{response}"
         }
@@ -209,11 +209,12 @@ module Tuppari
           :event => event,
           :message => message
       }
+      url = get_gyoji_base_url() + Tuppari::GyojiServerSpec::MESSAGES_PATH
       auth_header = Tuppari::Auth.create_authorization_header(
           :id => @application.access_key_id,
           :secret => @application.access_secret_key,
           :method => 'POST',
-          :uri => Tuppari::ServerURL::MESSAGES,
+          :uri => url,
           :host => 'api.tuppari.com',
           :query_string => '',
           :headers => headers,
@@ -221,9 +222,7 @@ module Tuppari
           :request_time => time
       )
       begin
-        body = RestClient.post(Tuppari::ServerURL::MESSAGES,
-                               JSON.unparse(body_params),
-                               headers.merge(:authorization => auth_header))
+        body = RestClient.post(url, JSON.unparse(body_params), headers.merge(:authorization => auth_header))
         @log.debug {
           "Tuppari message has been sent. (#{@application.id},#{channel},#{event},#{message})"
         }
@@ -245,7 +244,8 @@ module Tuppari
 
     def get_service_info()
       begin
-        body = RestClient.get(Tuppari::ServerURL::INFO, 'Content-type' => 'application/json')
+        url = get_gyoji_base_url() + Tuppari::GyojiServerSpec::INFO_PATH
+        body = RestClient.get(url, 'Content-type' => 'application/json')
         JSON.parse(body)
       rescue RestClient::Exception => e
         @log.warn("Failed to get the Tuppari service info (#{e}, #{e.http_body})")
@@ -274,6 +274,14 @@ module Tuppari
         else
           @application = application
         end
+      end
+    end
+
+    def get_gyoji_base_url()
+      if @application.nil?
+        @gyoji_base_url
+      else
+        @application.gyoji_base_url
       end
     end
 
