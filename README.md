@@ -40,7 +40,7 @@ open('tuppari.html', 'w') do |f|
   html = <<"EOF"
 <html>
   <head>
-  <script src="http://cdn.tuppari.com/0.1.0/tuppari.min.js"></script>
+  <script src="http://cdn.tuppari.com/0.2.0/tuppari.min.js"></script>
   <script>
     var client, channel;
     client = tuppari.createClient({applicationId: '#{application.id}'});
@@ -79,9 +79,9 @@ Tuppari account authentication is not needed for publishing messages. And follow
 
 ```ruby
 application = Tuppari::Application.new(
-  :id => 'xxxx',
-  :access_key_id => 'yyy',
-  :access_secret_key => 'zzz'
+  :id                => '4032236d-699a-4599-9405-xxxxxxxxxxxx', 
+  :access_key_id     => 'b49049f9-e055-4fa5-925b-xxxxxxxxxxxx', 
+  :access_secret_key => 'c01a3a31-92cd-4bf9-a238-xxxxxxxxxxxx'
 ) # or application = tuppari.get_application('first-tuppari') 
 
 Tuppari.publish_message(
