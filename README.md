@@ -4,9 +4,9 @@
 
 [Tuppari](http://hakobera.github.com/tuppari/) is an experimental implementation of unbreakable message broadcasting system using WebSocket and Amazon Web Services by [@hakobera](https://github.com/hakobera).
 
-https://github.com/hakobera/tuppari
+https://github.com/tuppari/tuppari
 
-https://github.com/hakobera/tuppari-servers
+https://github.com/tuppari/tuppari-servers
 
 
 ## Tuppari for Ruby developers 
