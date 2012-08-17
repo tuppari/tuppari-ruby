@@ -1,21 +1,21 @@
-# Tuppari client for Ruby
+# Tuppari Client for Ruby
 
 ## About Tuppari
 
-[Tuppari](http://hakobera.github.com/tuppari/) is an experimental implementation of unbreakable message broadcasting system using WebSocket and Amazon Web Services by [@hakobera](https://github.com/hakobera).
+[Tuppari](http://hakobera.github.com/tuppari/) is an experimental implementation of an unbreakable message broadcasting system using WebSockets and Amazon Web Services by [@hakobera](https://github.com/hakobera).
 
 https://github.com/tuppari/tuppari
 
 https://github.com/tuppari/tuppari-servers
 
 
-## Tuppari for Ruby developers 
+## Tuppari for Ruby Developers 
 
-You can easily build a Tuppari application by just using Ruby API. Let's get started now!
+You can easily build a Tuppari application by just using the Ruby API. Let's get started now!
 
 ### Gemfile
 
-Prepare Gemfile as follows.
+Prepare your Gemfile as follows:
 
 ```ruby
 source 'https://rubygems.org'
@@ -25,7 +25,7 @@ gem 'tuppari'
 
 ### Getting Started
 
-And then invoke `bundle console` to try Tuppari.
+Invoke `bundle console` to try Tuppari:
 
 ```ruby
 require 'tuppari'
@@ -69,9 +69,9 @@ tuppari.publish_message(
 )
 ```
 
-### Publishing messages without account authentication
+### Publishing Messages
 
-Tuppari account authentication is not needed for publishing messages. And following values for the target application are required.
+Tuppari account authentication is not needed for publishing messages. However, the following values for the target application are required:
 
 - application_id
 - access_key_id (for the application)
