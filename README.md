@@ -92,3 +92,8 @@ Tuppari.publish_message(
 )
 ```
 
+## License
+
+The MIT License
+
+
